@@ -4,8 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A maze(ing) Logo</title>
+    <script src="asset/js/d3.V6.min.js"></script>
+    <script src="asset/js/amazelogo.js"></script>
+    <style>
+        #logoMaze{
+            height: 100%;
+            width: 100%;
+            min-height: 300px;
+        }
+    </style>
 </head>
 <body>
-    
+    <div id="logoMaze"></div>
+
+    <script>
+        let ml = new amazelogo({'idCont':'logoMaze','nbColo':30});
+    </script>
 </body>
 </html>

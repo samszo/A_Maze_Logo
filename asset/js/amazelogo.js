@@ -1,21 +1,21 @@
 class amazelogo {
-    UserFictionGeneration
-    AuqSfpDB0NWH3AVN
     constructor(params) {
         var me = this;
         this.idCont = params.idCont;
         this.cont = d3.select("#"+params.idCont);
-        this.anime = params.anime ? params.anime : false;
-        this.regle = params.regle ? params.regle : "MESOSTICHES";
         this.textes = params.textes ? params.textes : [
-            ["Il y a des mots", "à travers", "les lettres", "qui osent", "des significations", "souvent improbables", "mais","au combien","charmantes","et","pitoresques"]
+            ["ARCANES"]
         ];
+        this.nbCol = params.nbColo ? params.nbColo : 10;        
+        this.nbRow = params.nbRow ? params.nbRow : 6;        
+        this.width = params.width ? params.width : this.cont.node().offsetWidth;
+        this.height = params.height ? params.height : this.cont.node().offsetHeight;
+        /*
+        this.anime = params.anime ? params.anime : false;
         this.fontFileName = params.fontFileName ? params.fontFileName : 'asset/fonts/slkscr.ttf';        
         this.fontFamily = params.fontFamily ? params.fontFamily : "sans-serif";
         this.regleColor = params.regleColor ? params.regleColor : "red";
         this.txtColor = params.txtColor ? params.txtColor : "black";
-        this.width = params.width ? params.width : this.cont.node().offsetWidth;
-        this.height = params.height ? params.height : this.cont.node().offsetHeight;
         this.duree = params.duree ? params.duree : 1;//en seconde
         this.delais = params.delais ? params.delais : 250;//en milliseseconde
         this.boutons = params.boutons ? params.boutons : false;
@@ -27,7 +27,11 @@ class amazelogo {
         this.interpolateColor = params.interpolateColor ? params.interpolateColor : d3.interpolateTurbo;
         this.animations = params.animations ? params.animations : [];
         this.f;
-        var svg, global
+        */
+        var svg, global, contPre, margin=6, arrMaze=[]
+            , scaleH = d3.scaleLinear().domain([0, me.nbRow*2+1]).range([margin*2, me.height-margin])
+            , scaleW = d3.scaleLinear().domain([0, me.nbCol*4+1]).range([margin*2, me.width-margin]);
+        /*
             , color = d3.scaleSequential().domain([1,100])
                 .interpolator(me.interpolateColor)//d3.interpolateWarm
             , aleaColor = d3.randomUniform(0, 100)
@@ -35,311 +39,159 @@ class amazelogo {
             , rapportFont=0.8, fontSize=20, fontSizeRedim=fontSize*rapportFont
             , btnPause, btnPlay, btnReload, bPause = false, chars=[]
             , regle, arrTextes=[], arrTextesSelect=[], curdim
-            , margin=6;            
+            ;            
+        */
 
         this.init = function () {
             
             svg = this.cont.append("svg")
-                .attr("id", me.idCont+'svgMstch')
+                .attr("id", me.idCont+'svgMazeLogo')
                 .attr("width",me.width+'px').attr("height", me.height+'px')
                 .style("margin",margin+"px");            
-            global = svg.append("g").attr("id",me.idCont+'svgMstchGlobal');
-
-            //construction de la règle
-            me.regle.split('').forEach((t,i)=>chars.push({'t':t,'i':i}));
-            regle = global.append('g')
-                .attr("id",me.idCont+'svgMstchRegle');
-            
-            //affiche la règle
-            regle.selectAll('.regle').data(chars).enter().append("text")
-                .attr("id", (d,i) => me.idCont+'svgMstchRegle'+i)
-                .attr("class", 'regle')
-                .attr("x",(me.width/2))
-                .attr("y",(d,i)=>(fontSize*(i+1))+margin)
-                .attr("text-anchor", "middle")
-                .attr("font-family", me.fontFamily)
-                .attr("font-size", fontSize+"px")
-                .attr("fill",d=> me.regleColor == "alea" ? color(aleaColor()) : me.regleColor)
-                .text(d=>d.t==" " ? '\u00A0' : d.t)
-                .style('cursor',me.boutons ? 'pointer' : 'none')
-                .on('click',me.fctClickRegle);
-            //calcule la place des lettre de la règle
-            chars.forEach((c,i)=>c.bb=d3.select('#'+me.idCont+'svgMstchRegle'+i).node().getBBox())
-            //création d'une ligne pour gérer la sélection
-            if(me.boutons){
-                regle.selectAll('.regleSelect').data(chars).enter().append("path")
-                    .attr("id", (d,i) => me.idCont+'svgMstchRegleSelect'+i)
-                    .attr("class", 'regleSelect')
-                    .attr("d",d=>"M "+(d.bb.x)+","+(d.bb.y+d.bb.height-(margin/2))+" "+(d.bb.x+d.bb.width)+","+(d.bb.y+d.bb.height-(margin/2)))
-                    .attr("fill",'none')
-                    .attr("stroke-width",1)
-                    .attr("stroke-dasharray","0.5,0.5")
-                    .attr("stroke-opacity",0)                    
-                    .attr("stroke-linecap","butt")
-                    .attr("stroke-linejoin","miter")
-                    .attr("stroke-miterlimit","4")
-                    .attr("stroke-dashoffset","0")
-                    .attr("stroke",d=> me.regleColor == "alea" ? color(aleaColor()) : me.regleColor);
-            }
-
-
-            //construction des textes à gauche et droite
-            let y=0            
-            me.textes.forEach((txts,j)=>{
-                arrTextes[j]=[];
-                chars.forEach((t,i)=>{
-                    y=i;                    
-                    if(i>=txts.length)y=(i % txts.length);
-                    let f = txts[y] ? getIndicesOf(t.t,txts[y],false) : "";
-                    //prend en compte le caractère le plus au centre
-                    if(f.length){
-                        let idx = Math.trunc(f.length/2);
-                        arrTextes[j].push({'text':txts[y].substring(0,f[idx]),'ordre':i,'type':'gauche'});
-                        arrTextes[j].push({'text':txts[y].substring(f[idx]+1),'ordre':i,'type':'droite'});
-                    }else{
-                        /*pour forcer l'écriture du texte
-                        if(i>0){
-                            arrTextes[j][i-1]['text']+=" "+txts[y];
-                            arrTextes[j].push({'text':"",'ordre':i,'type':'droite'});
-                        }else{
-                            arrTextes[j].push({'text':" "+txts[y],'ordre':i,'type':'droite'});
-                        }*/
-                        arrTextes[j].push({'text':"",'ordre':i,'type':'droite'});
-                        arrTextes[j].push({'text':"",'ordre':i,'type':'gauche'});
-                    }    
-                })
-            })
-
-            let bb;
-            if(me.anime){
-                //construction des paths et des positions
-                arrTextes.forEach(txts=>{
-                    txts.forEach((txt)=>{
-                        //bb = d3.select('#'+me.idCont+'svgMstchRegle'+txt.ordre).node().getBBox();
-                        txt.paths = getTxtPath(txt.text);
-                        txt.rbb = chars[txt.ordre].bb;
-                    })
-                })
-                //ajoute les path de la première dimension
-                curdim = 0;
-                drawSvgTxtPath();
-                //lancement des animations
-                alterneTexte();
-                if(me.regleColor == "alea")changeColorRegle();
-                if(me.txtColor == "alea")changeColorTxt();
-            }else{
-                curdim = 0;
-                drawTxtStatique(curdim)
-            }
-
+            global = svg.append("g").attr("id",me.idCont+'svgMazeLogoGlobal');
+            contPre = this.cont.append("pre").attr("id",me.idCont+'preMazeLogo');
+            //construction du labyrinthe aléatoire suivant les dimensions
+            arrMaze = maze(me.nbRow,me.nbCol);
+            //dessine le labyrinte en texte
+            contPre.html(displayText(arrMaze));
+            //calcule les paths du labyrinthe en svg 
+            let pp = displayPath(arrMaze);
+            //dessine les points du labyrinte en svg
+            global.append('g').attr('id','points').selectAll('.point').data(pp.points).enter().append('path')
+                .attr("class", "point")
+                .attr("id", (d,i)=>"point"+i)
+                .style("stroke", "black")
+                .style("fill", "red")
+                .attr("d", d=>d)
+            //dessine les murs du labyrinte en svg
+            global.append('g').attr('id','murs').selectAll('.mur').data(pp.murs).enter().append('path')
+                .attr("class", "mur")
+                .attr("id", (d,i)=>"mur"+i)
+                .style("stroke", "red")
+                .style("stroke-width",margin)
+                .style("fill", "black")
+                .attr("d", d=>d.d)
+            //ajoute un rectangle qui bouge
               
         }
 
-        function pauseChangeText(e,d){
-            if(!me.boutons)return;
-            let strophes = arrTextes[curdim].filter(s=>s.ordre==d.i);
-            arrTextes[curdim].forEach((s,i)=>{
-                if(s.ordre==d.i){
-                    if(arrTextesSelect[i]){
-                        arrTextesSelect[i]=false;
-                        s.paths.forEach(p=>p.class=me.idCont+'line-drawing');
-                        d3.select('#'+me.idCont+'svgMstchRegleSelect'+s.ordre).attr("stroke-opacity",0);                    
-                    }else{
-                        s.paths.forEach(p=>p.class=me.idCont+'pause');
-                        d3.select('#'+me.idCont+'svgMstchRegleSelect'+s.ordre).attr("stroke-opacity",1);                    
-                        arrTextesSelect[i]=s;        
-                    }
-                }
-            });
+        function maze(x,y) {
+            var n=x*y-1;
+            if (n<0) {alert("illegal maze dimensions");return;}
+            let horiz =[],verti =[],next; 
+            for (var j= 0; j<x+1; j++) horiz[j]= [];
+            for (var j= 0; j<x+1; j++) verti[j]= [];
+            let here = [Math.floor(Math.random()*x), Math.floor(Math.random()*y)],
+                path = [here],
+                unvisited = [];
+            for (var j = 0; j<x+2; j++) {
+                unvisited[j] = [];
+                for (var k= 0; k<y+1; k++)
+                    unvisited[j].push(j>0 && j<x+1 && k>0 && (j != here[0]+1 || k != here[1]+1));
+            }
+            while (0<n) {
+                var potential = [[here[0]+1, here[1]], [here[0],here[1]+1],
+                    [here[0]-1, here[1]], [here[0],here[1]-1]];
+                var neighbors = [];
+                for (var j = 0; j < 4; j++)
+                    if (unvisited[potential[j][0]+1][potential[j][1]+1])
+                        neighbors.push(potential[j]);
+                if (neighbors.length) {
+                    n = n-1;
+                    next= neighbors[Math.floor(Math.random()*neighbors.length)];
+                    unvisited[next[0]+1][next[1]+1]= false;
+                    if (next[0] == here[0])
+                        horiz[next[0]][(next[1]+here[1]-1)/2]= true;
+                    else 
+                        verti[(next[0]+here[0]-1)/2][next[1]]= true;
+                    path.push(here = next);
+                } else 
+                    here = path.pop();
+            }
+            return {x: x, y: y, horiz: horiz, verti: verti};
         }
 
-        function drawTxtStatique(dim){
-            global.selectAll('.svgMstchTxt').data(arrTextes[dim]).enter().append("text")
-                .attr("id",(d,i)=>me.idCont+'svgMstchTxt'+i)
-                .attr("class", 'MstchTxt')
-                .attr("x",d=> d.type=='gauche' ? (me.width/2)-margin : (me.width/2)+margin)
-                .attr("y",d=> (fontSize*(d.ordre+1))+margin)
-                .attr("text-anchor", d=>d.type=='gauche' ? "end" : "start")
-                .attr("font-family", me.fontFamily)
-                .attr("font-size", fontSizeRedim+"px")
-                .attr("fill",(d)=> me.txtColor == "alea" ? color(aleaColor()) : me.txtColor)
-                .text(d=>d.text);                
-            //redimensionne le svg
-            let bb = global.node().getBBox();
-            svg.attr('viewBox',(bb.x-margin)+' '+(bb.y-margin)+' '+' '+(bb.width+margin+(margin*2))+' '+(bb.height+(margin*2)));
-            if(me.fctEnd)me.fctEnd();
-
+        function displayText(m) {
+            var text= [];
+            for (var j= 0; j<m.x*2+1; j++) {
+                var line= [];
+                if (0 == j%2)
+                    for (var k=0; k<m.y*4+1; k++)
+                        if (0 == k%4) 
+                            line[k]= '+';
+                        else
+                            if (j>0 && m.verti[j/2-1][Math.floor(k/4)])
+                                line[k]= ' ';
+                            else
+                                line[k]= '-';
+                else
+                    for (var k=0; k<m.y*4+1; k++)
+                        if (0 == k%4)
+                            if (k>0 && m.horiz[(j-1)/2][k/4-1])
+                                line[k]= ' ';
+                            else
+                                line[k]= '|';
+                        else
+                            line[k]= ' ';
+                if (0 == j) line[1]= line[2]= line[3]= ' ';
+                if (m.x*2-1 == j) line[4*m.y]= ' ';
+                text.push(line.join('')+'\r\n');
+            }
+            return text.join('');
         }
 
-        function drawSvgTxtPath(){
-            if(arrTextes.length==0)return;
-            global.select('#gTextes').remove();
-            let gTextes = global.append('g').attr('id','gTextes');
-            let gTxt = gTextes.selectAll('g').data(arrTextes[curdim]).enter().append('g')
-                .attr('id',(d,i)=>me.idCont+'gTxt'+i);
-            let gCaracts = gTxt.selectAll('path')
-                .data((d,i)=>{
-                    return arrTextesSelect[i] ? arrTextesSelect[i].paths : d.paths
-                })
-                .enter().append('path')
-                .attr('class',d=>d.class)
-                .attr('fill',"none")
-                .attr('fill-rule',"evenodd")
-                .attr("stroke",(d)=> {
-                    let c = me.txtColor == "alea" ? color(aleaColor()) : me.txtColor;
-                    if(d.space)c='none';
-                    return c;
-                })
-                .attr('stroke-width',"1")
-                .attr('d',(d,i)=> {
-                    return d.d;
-                })
-                .attr('transform',(d,i)=>{
-                    let gX = d.gX;
-                    let t = 'translate('+(gX)+','+(0)+')';
-                    return t;
-                });
-            //positionne les textes
-            gTxt.attr('transform',(d,i)=>{
-                let bb = d3.select('#'+me.idCont+'gTxt'+i).node().getBBox()
-                , moveY = d.rbb.y+(d.rbb.height*rapportFont)//sur la ligne de la lettre règle
-                , moveX = d.type=='gauche' ? -bb.x-bb.width+d.rbb.x : -bb.x+d.rbb.x+d.rbb.width
-                , t = 'translate('+moveX+','+moveY+')';
-               return t;
-            })
-            //redimensionne le svg
-            let bb = global.node().getBBox();
-            svg.attr('viewBox',(bb.x-margin)+' '+(bb.y-margin)+' '+' '+(bb.width+(margin*3))+' '+(bb.height+(margin*3)));
-            if(me.fctEnd)me.fctEnd();
-        }
-    
-        function getTxtPath(txt){
-    
-            let glyphs = me.f.stringToGlyphs(txt)
-                , paths = []
-                , gX=0;
-            glyphs.forEach(g => {
-                let fp = g.getPath(0,0,fontSizeRedim)
-                , bb = fp.getBoundingBox();
-                if(g.name=="space"){
-                    paths.push({'space':true,'d':"M 0,0 H "+margin, 'gX':gX ,'bb':bb, 'class':me.idCont+'space'});
-                    gX+=margin;
+        function displayPath(m) {
+            var points = [], murs=[];
+            for (var j= 0; j<m.x*2+1; j++) {
+                var line= d3.path();
+                if (0 == j%2)
+                    for (var k=0; k<m.y*4+1; k++)
+                        if (0 == k%4) 
+                            points.push(getCirclePath(k,j,margin));//'+';
+                        else
+                            if (j>0 && m.verti[j/2-1][Math.floor(k/4)])
+                                line.moveTo(scaleW(k+1), scaleH(j));// ' ';
+                            else
+                                line.lineTo(scaleW(k+1), scaleH(j));//'-';
+                else
+                    for (var k=0; k<m.y*4+1; k++)
+                        if (0 == k%4)
+                            if (k>0 && m.horiz[(j-1)/2][k/4-1])
+                                line.moveTo(scaleW(k+1), scaleH(j));// ' ';
+                            else{
+                                //murs verticaux
+                                let vline = d3.path();
+                                vline.moveTo(scaleW(k), scaleH(j-1))
+                                vline.lineTo(scaleW(k), scaleH(j+1));//= '|';
+                                murs.push({'j':j,'k':k,'d':vline.toString()});
+                            }
+                        else
+                            line.moveTo(scaleW(k+1), scaleH(j));// = ' ';
+                if (0 == j){
+                    //ligne du haut
+                    line= d3.path();
+                    line.moveTo(scaleW(4), scaleH(j))//'   ';
+                    line.lineTo(scaleW(k-1), scaleH(j));
+                    murs.push({'j':j,'k':k,'d':line.toString()});
                 }else{
-                    paths.push({'space':false,'d':fp.toPathData(), 'gX':gX ,'bb':bb, 'class':me.idCont+'line-drawing'});
-                    gX+=bb.x1+bb.x2;          
-                }
-            });
-            return paths;
-        }
-
-        function alterneTexte(){
-    
-            let t = '.'+me.idCont+'line-drawing';
-            let a = anime.timeline({
-                targets: t,
-                delay: function(el, i) { return i * me.delais },
-                duration: me.duree*1000,//durée par texte /arrTextes.length
-                easing: 'easeInOutSine',
-                }).add({
-                    strokeDashoffset: [anime.setDashoffset, 0],
-                }).add({
-                    strokeDashoffset: [0, anime.setDashoffset],
-            });
-            me.animations.push({'a':a,'t':t});    
-    
-            a.finished.then(function(){
-                if(me.fctEndAlterneTexte)me.fctEndAlterneTexte(); 
-                else{
-                    curdim = curdim<arrTextes.length-1 ? curdim+1 : 0;
-                    drawSvgTxtPath(curdim);
-                    alterneTexte();
-                } 
-            });
-        }
-
-        function changeColorRegle(){
-    
-            let t = '#'+me.idCont+'svgMstchRegle .regle';
-            let a = anime({
-                targets: t,
-                loop: true,
-                duration: me.duree*1000,//durée par texte,*arrTextes.length
-                easing: 'easeInOutSine',
-                fill: {
-                    value: function () {
-                        let c1 = color(aleaColor());
-                        let c2 = color(aleaColor());
-                        return [c1, c2];
-                    },
-                },
-                //opacity: [0, 1],
-                direction: 'alternate'
-            });
-            me.animations.push({'a':a,'t':t});    
-        }
-
-        function changeColorTxt(){
-    
-            let t = '.'+me.idCont+'line-drawing';
-            let a = anime({
-                targets: t,
-                loop: true,
-                duration: me.duree*1000,//durée par texte,
-                easing: 'easeInOutSine',
-                stroke: {
-                    value: function () {
-                        let c1 = color(aleaColor());
-                        let c2 = color(aleaColor());
-                        return [c1, c2];
-                    },
-                },
-                //opacity: [0, 1],
-                direction: 'alternate'
-            });
-            me.animations.push({'a':a,'t':t});    
-
-        }        
-        //merci à https://stackoverflow.com/questions/3410464/how-to-find-indices-of-all-occurrences-of-one-string-in-another-in-javascript/3410557#3410557
-        function getIndicesOf(searchStr, str, caseSensitive) {
-            var searchStrLen = searchStr.length;
-            if (searchStrLen == 0) {
-                return [];
+                    let d = line.toString();
+                    if(d.substring(0,1)=='L'){
+                        d="M"+scaleW(0)+','+scaleH(j)+d;
+                    }
+                    murs.push({'j':j,'k':k,'d':d});
+                }                 
             }
-            var startIndex = 0, index, indices = [];
-            if (!caseSensitive) {
-                str = str.toLowerCase();
-                searchStr = searchStr.toLowerCase();
-            }
-            while ((index = str.indexOf(searchStr, startIndex)) > -1) {
-                indices.push(index);
-                startIndex = index + searchStrLen;
-            }
-            return indices;
+            //l'avant dernier mur invisible et la sortie
+            console.log(murs);
+            murs.splice(-3, 2);
+            console.log(murs);
+            return {'points':points,'murs':murs};
         }
 
-        this.pause = function(){
-            tl.pause();
-            bPause = true
-            btnPause.attr('visibility','hidden');
-            btnReload.attr('visibility','visible');
-            btnPlay.attr('visibility','visible');
-
-        }
-
-        this.start = function(){
-            if(!bPause){
-                tl.play();
-                if(me.boutons){
-                    btnPause.attr('visibility','visible');
-                    btnReload.attr('visibility','hidden');
-                    btnPlay.attr('visibility','hidden');           
-                }
-    
-            }
-        }
-
-        this.restart = function(){
-            tl.restart();
+        function getCirclePath(x, y, radius){
+            var context = d3.path();
+            context.arc(scaleW(x), scaleH(y), radius, 0, 2 * Math.PI);
+            return context.toString();
         }
   
         this.hide = function(){
@@ -349,27 +201,7 @@ class amazelogo {
           svg.attr('visibility',"visible");
         }
 
-        this.clean = function(){
-            me.animations.forEach(a=>{
-                anime.remove(a.t);
-            });
-            me.animations=[];
-            arrTextes=[];
-            arrTextesSelect=[];
-            d3.select('#'+me.idCont+'svgMstch').remove();
-        }
-  
-        if(me.anime ){
-            //charge la police 
-            opentype.load(me.fontFileName, function(err, font) {
-                if (err) {
-                    console.error(err.toString());
-                    return;
-                }
-                me.f = font
-                me.init();
-            });        
-        }else me.init();
+         me.init();
 
     }
 }
