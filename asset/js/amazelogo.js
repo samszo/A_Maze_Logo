@@ -6,17 +6,66 @@ class amazelogo {
         this.textes = params.textes ? params.textes : [
             ["ARCANES"]
         ];
-        this.nbCol = params.nbColo ? params.nbColo : 10;        
-        this.nbRow = params.nbRow ? params.nbRow : 6;        
+        this.nbCol = params.nbCol ? params.nbCol : 10;//ATTENTION le nombre de colonne est lié au nombre de caratcère du texte à afficher           
+        this.nbRow = params.nbRow ? params.nbRow : 7;//ATTENTION le nombre de lignes est lié à la police de caractère        
         this.width = params.width ? params.width : this.cont.node().offsetWidth;
         this.height = params.height ? params.height : this.cont.node().offsetHeight;
+
+            //basé sur https://www.dafont.com/fr/poxel.font
+        this.lettreCases = [
+                {'l':'A','cases':[
+                    {'c':0,'r':1},{'c':0,'r':2},{'c':0,'r':3},{'c':0,'r':4},{'c':0,'r':5},{'c':0,'r':6}
+                    ,{'c':1,'r':0},{'c':1,'r':4}
+                    ,{'c':2,'r':0},{'c':2,'r':4}
+                    ,{'c':3,'r':0},{'c':3,'r':4}
+                    ,{'c':4,'r':1},{'c':4,'r':2},{'c':4,'r':3},{'c':4,'r':4},{'c':4,'r':5},{'c':4,'r':6}
+                ]}
+                ,{'l':'R','cases':[
+                    {'c':0,'r':0},{'c':0,'r':1},{'c':0,'r':2},{'c':0,'r':3},{'c':0,'r':4},{'c':0,'r':5},{'c':0,'r':6}
+                    ,{'c':1,'r':0},{'c':1,'r':3}
+                    ,{'c':2,'r':0},{'c':2,'r':3},{'c':2,'r':4}
+                    ,{'c':3,'r':0},{'c':3,'r':3},{'c':3,'r':5}
+                    ,{'c':4,'r':1},{'c':4,'r':2},{'c':4,'r':6}
+                ]}
+                ,{'l':'C','cases':[
+                    {'c':0,'r':1},{'c':0,'r':2},{'c':0,'r':3},{'c':0,'r':4},{'c':0,'r':5}
+                    ,{'c':1,'r':0},{'c':1,'r':6}
+                    ,{'c':2,'r':0},{'c':2,'r':6}
+                    ,{'c':3,'r':0},{'c':3,'r':6}
+                    ,{'c':4,'r':0},{'c':4,'r':6}
+                ]}
+                ,{'l':'N','cases':[
+                    {'c':0,'r':0},{'c':0,'r':1},{'c':0,'r':2},{'c':0,'r':3},{'c':0,'r':4},{'c':0,'r':5},{'c':0,'r':6}
+                    ,{'c':1,'r':2}
+                    ,{'c':2,'r':3}
+                    ,{'c':3,'r':4}
+                    ,{'c':4,'r':0},{'c':4,'r':1},{'c':4,'r':2},{'c':4,'r':3},{'c':4,'r':4},{'c':4,'r':5},{'c':4,'r':6}
+                ]}
+                ,{'l':'E','cases':[
+                    {'c':0,'r':0},{'c':0,'r':1},{'c':0,'r':2},{'c':0,'r':3},{'c':0,'r':4},{'c':0,'r':5},{'c':0,'r':6}
+                    ,{'c':1,'r':0},{'c':1,'r':3},{'c':1,'r':6}
+                    ,{'c':2,'r':0},{'c':2,'r':3},{'c':2,'r':6}
+                    ,{'c':3,'r':0},{'c':3,'r':3},{'c':3,'r':6}
+                    ,{'c':4,'r':0},{'c':4,'r':6}
+                ]}
+                ,{'l':'S','cases':[
+                    {'c':0,'r':1},{'c':0,'r':2},{'c':0,'r':3},{'c':0,'r':6}
+                    ,{'c':1,'r':0},{'c':1,'r':3},{'c':1,'r':6}
+                    ,{'c':2,'r':0},{'c':2,'r':3},{'c':2,'r':6}
+                    ,{'c':3,'r':0},{'c':3,'r':3},{'c':3,'r':6}
+                    ,{'c':4,'r':0},{'c':4,'r':3},{'c':4,'r':4},{'c':4,'r':5}
+                ]}
+            ];
+            this.duree = params.duree ? params.duree : 1;//en seconde
+            this.interpolateColor = params.interpolateColor ? params.interpolateColor : d3.interpolateTurbo;
+            this.arrAngle = [90, -90, 180, -180, 270, -270, 360, -360, 450, -450];
+            this.aleaAngle = function(){return me.arrAngle[d3.randomInt(0, me.arrAngle.length)()]};
         /*
         this.anime = params.anime ? params.anime : false;
         this.fontFileName = params.fontFileName ? params.fontFileName : 'asset/fonts/slkscr.ttf';        
         this.fontFamily = params.fontFamily ? params.fontFamily : "sans-serif";
         this.regleColor = params.regleColor ? params.regleColor : "red";
         this.txtColor = params.txtColor ? params.txtColor : "black";
-        this.duree = params.duree ? params.duree : 1;//en seconde
         this.delais = params.delais ? params.delais : 250;//en milliseseconde
         this.boutons = params.boutons ? params.boutons : false;
         this.fctEnd = params.fctEnd ? params.fctEnd : false;
@@ -24,17 +73,27 @@ class amazelogo {
         this.fctChange = params.fctChange ? params.fctChange : false;
         this.fctClickRegle = params.fctClickRegle ? params.fctClickRegle : pauseChangeText;
         this.fctEndAlterneTexte = params.fctEndAlterneTexte ? params.fctEndAlterneTexte : false;
-        this.interpolateColor = params.interpolateColor ? params.interpolateColor : d3.interpolateTurbo;
         this.animations = params.animations ? params.animations : [];
         this.f;
         */
-        var svg, global, contPre, margin=6, arrMaze=[]
-            , scaleH = d3.scaleLinear().domain([0, me.nbRow*2+1]).range([margin*2, me.height-margin])
-            , scaleW = d3.scaleLinear().domain([0, me.nbCol*4+1]).range([margin*2, me.width-margin]);
-        /*
+        //ATTENTION les proproportions doivent générer des carrés
+        if(me.height<me.width)
+            me.height = me.width/me.nbCol*(me.nbRow+1);
+        else
+            me.width = me.height/me.nbRow*(me.nbCol+1);
+        var svg, global, contPre, margin=6, arrMaze=[], pp, pMurs
+            , scaleH = d3.scaleLinear().domain([0, me.nbRow+1]).range([margin*2, me.height-margin])
+            , scaleW = d3.scaleLinear().domain([0, me.nbCol+1]).range([margin*2, me.width-margin])
+            , wRect = scaleW(1)-scaleW(0)//-margin*2
+            , hRect = scaleH(1)-scaleH(0)//-margin*2
+            , aleaRow = d3.randomInt(0, me.nbRow)
+            , aleaCol = d3.randomInt(0, me.nbCol)
             , color = d3.scaleSequential().domain([1,100])
                 .interpolator(me.interpolateColor)//d3.interpolateWarm
             , aleaColor = d3.randomUniform(0, 100)
+            , curBalance = 0, delayBalanceStart = 0, delayBalanceChange = 500, dureeBalance = 500, repeatBalance = 3
+            ;
+        /*
             , tl
             , rapportFont=0.8, fontSize=20, fontSizeRedim=fontSize*rapportFont
             , btnPause, btnPlay, btnReload, bPause = false, chars=[]
@@ -53,9 +112,9 @@ class amazelogo {
             //construction du labyrinthe aléatoire suivant les dimensions
             arrMaze = maze(me.nbRow,me.nbCol);
             //dessine le labyrinte en texte
-            contPre.html(displayText(arrMaze));
+            //contPre.html(displayText(arrMaze));
             //calcule les paths du labyrinthe en svg 
-            let pp = displayPath(arrMaze);
+            pp = displayMurs(arrMaze);
             //dessine les points du labyrinte en svg
             global.append('g').attr('id','points').selectAll('.point').data(pp.points).enter().append('path')
                 .attr("class", "point")
@@ -64,15 +123,117 @@ class amazelogo {
                 .style("fill", "red")
                 .attr("d", d=>d)
             //dessine les murs du labyrinte en svg
-            global.append('g').attr('id','murs').selectAll('.mur').data(pp.murs).enter().append('path')
+            pMurs = global.append('g').attr('id','murs').selectAll('.mur').data(pp.murs).enter().append('path')
                 .attr("class", "mur")
                 .attr("id", (d,i)=>"mur"+i)
                 .style("stroke", "red")
-                .style("stroke-width",margin)
+                .style("stroke-width",margin/3)
                 .style("fill", "black")
                 .attr("d", d=>d.d)
-            //ajoute un rectangle qui bouge
-              
+
+            
+            //changeMurColor();
+            balanceMur();  
+        }
+
+        function ecrireTexte(){
+            //ajoute les rectangles pour composer les lettres
+            let lettres = global.append('g').attr('id','lettres').selectAll('.lettre').data(getCaseLettre('ARCANES')).enter().append('g');
+            lettres.append('g').attr('id','cases').selectAll('.case').data(d=>d.cases).enter().append('rect')
+                .attr("class", "case")
+                .attr("id", (d,i)=>"case_"+d.l+"_"+i)
+                .attr("height", hRect)
+                .attr("width", wRect)
+                .attr("x", (d,i)=>scaleW((d.c)))//scaleW((d.c)*wMur)+margin)
+                .attr("y", (d,i)=>scaleH((d.r)))//scaleH((d.r)*hMur)+margin)
+                .style("stroke", "white")
+                .style("stroke-width",1)
+                .style("fill", "black")
+                ;
+        }    
+
+        function balanceMur(){    
+            let t = '#'+me.idCont+'svgMazeLogo .mur';
+            curBalance ++;
+            let a =  anime({
+                targets: t,
+                loop: false,
+                delay: curBalance ? delayBalanceChange : delayBalanceStart,
+                duration: dureeBalance,
+                easing: 'easeInOutSine',
+                //direction: 'alternate',
+                transform:
+                    function (d,i) {
+                        //récupère les propriété du mur
+                        let mur = d3.select("#"+d.id).data()[0], r="rotate(0)";
+                        if(!mur.ext) r = "rotate("+me.aleaAngle()+")";
+                        else r = "rotate("+me.aleaAngle()+")";//on ne bouge pas les murs extérieurs
+                        if(curBalance>=repeatBalance){
+                            r="rotate(0)";
+                            ouvreMurEntreeSortie();
+                        }
+                        return r;
+                    },
+                complete: function(anim) {
+                    if(curBalance<repeatBalance)balanceMur();
+                }    
+              })
+        }
+
+        function ouvreMurEntreeSortie(){
+            //ouverture en haut à gauche
+            anime({
+                targets: '#mur0',
+                loop: false,
+                delay: delayBalanceChange,
+                duration: dureeBalance*4,
+                easing: 'easeInOutSine',
+                transform:"rotate(810)"
+            });
+            //ouverture en bas à droite
+            anime({
+                targets: '#mur'+(pp.murs.length-1),
+                loop: false,
+                delay: delayBalanceChange,
+                duration: dureeBalance*4,
+                easing: 'easeInOutSine',
+                transform:"rotate(900)"
+            });
+            ecrireTexte();
+        }
+
+        function changeMurColor(){    
+            let t = '#'+me.idCont+'svgMazeLogo .mur';
+            let a = anime({
+                targets: t,
+                loop: true,
+                duration: me.duree*1000,//durée par texte,*arrTextes.length
+                easing: 'easeInOutSine',
+                stroke: {
+                    value: function () {
+                        let c1 = color(aleaColor());
+                        let c2 = color(aleaColor());
+                        return [c1, c2];
+                    },
+                },
+                //opacity: [0, 1],
+                direction: 'alternate'
+            });
+        }
+
+        function getCaseLettre(mot){
+            let rs = [];
+            for (let p = 0; p < mot.length; p++) {
+                let c = mot.charAt(p);
+                let l = me.lettreCases.filter(d=>d.l==c)[0];
+                //recalcule les positions
+                let ol = {'l':l,'cases':[]};
+                l.cases.forEach(d=>{
+                    ol.cases.push({'c':d.c+(6*p),'r':d.r,'l':c,'p':p})
+                })
+                rs.push(ol);
+            }
+            return rs;
         }
 
         function maze(x,y) {
@@ -140,52 +301,49 @@ class amazelogo {
             return text.join('');
         }
 
-        function displayPath(m) {
-            var points = [], murs=[];
-            for (var j= 0; j<m.x*2+1; j++) {
-                var line= d3.path();
-                if (0 == j%2)
-                    for (var k=0; k<m.y*4+1; k++)
-                        if (0 == k%4) 
-                            points.push(getCirclePath(k,j,margin));//'+';
+
+        function displayMurs(m) {
+            var points = [], murs=[], riens=[], mursFait=[];
+            for (var r= 0; r<m.x*2+1; r++) {
+                if (0 == r%2){
+                    for (var c=0; c<m.y+1; c++){
+                        //ajoute le cercle pilier
+                        points.push(getCirclePath(c,r/2,margin/3));
+                        //vérifie s'il faut générer le mur horizontal
+                        if (r>0 && m.verti[r/2-1][c])
+                            riens.push({c,r});
                         else
-                            if (j>0 && m.verti[j/2-1][Math.floor(k/4)])
-                                line.moveTo(scaleW(k+1), scaleH(j));// ' ';
-                            else
-                                line.lineTo(scaleW(k+1), scaleH(j));//'-';
-                else
-                    for (var k=0; k<m.y*4+1; k++)
-                        if (0 == k%4)
-                            if (k>0 && m.horiz[(j-1)/2][k/4-1])
-                                line.moveTo(scaleW(k+1), scaleH(j));// ' ';
-                            else{
-                                //murs verticaux
-                                let vline = d3.path();
-                                vline.moveTo(scaleW(k), scaleH(j-1))
-                                vline.lineTo(scaleW(k), scaleH(j+1));//= '|';
-                                murs.push({'j':j,'k':k,'d':vline.toString()});
-                            }
-                        else
-                            line.moveTo(scaleW(k+1), scaleH(j));// = ' ';
-                if (0 == j){
-                    //ligne du haut
-                    line= d3.path();
-                    line.moveTo(scaleW(4), scaleH(j))//'   ';
-                    line.lineTo(scaleW(k-1), scaleH(j));
-                    murs.push({'j':j,'k':k,'d':line.toString()});
-                }else{
-                    let d = line.toString();
-                    if(d.substring(0,1)=='L'){
-                        d="M"+scaleW(0)+','+scaleH(j)+d;
+                            if(c!=m.y)murs.push(setDataMur(c,r/2,'h'));
                     }
-                    murs.push({'j':j,'k':k,'d':d});
-                }                 
+                }else{
+                    for (var c=0; c<m.y+1; c++){
+                        if (c>0 && m.horiz[(r-1)/2][c-1])
+                            riens.push({c,r});
+                        else
+                            murs.push(setDataMur(c,(r-1)/2,'v'));
+                    }
+                }
             }
-            //l'avant dernier mur invisible et la sortie
-            console.log(murs);
-            murs.splice(-3, 2);
-            console.log(murs);
             return {'points':points,'murs':murs};
+        }
+
+        function setDataMur(c,r,o){
+            let line = d3.path(), x0, y0, x1, y1, ext=false;
+            x0=scaleW(c);
+            y0=scaleH(r);
+            if(o=='v'){
+                x1=scaleW(c);
+                y1=scaleH(r+1);
+                if(c==0 || c==me.nbCol)ext=true;
+            }else{
+                x1=scaleW(c+1);
+                y1=scaleH(r);
+                if(r==0 || r==me.nbRow)ext=true;
+            }
+            line.moveTo(x0, y0);
+            line.lineTo(x1, y1);    
+            return {'c':c,'r':r,'x0':x0,'y0':y0,'x1':x1,'y1':y1,'ext':ext,'o':o,'d':line.toString()};
+
         }
 
         function getCirclePath(x, y, radius){
@@ -204,4 +362,5 @@ class amazelogo {
          me.init();
 
     }
+
 }
