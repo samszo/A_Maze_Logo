@@ -4,9 +4,9 @@ class amazelogo {
         this.idCont = params.idCont;
         this.cont = d3.select("#"+params.idCont);
         this.textes = params.textes ? params.textes : [
-            ["ARCANES"]
+            "ARCANES"
         ];
-        this.nbCol = params.nbCol ? params.nbCol : 10;//ATTENTION le nombre de colonne est lié au nombre de caratcère du texte à afficher           
+        this.nbCol = params.nbCol ? params.nbCol : 10;//ATTENTION le nombre de colonne est lié au nombre de caractère du texte à afficher           
         this.nbRow = params.nbRow ? params.nbRow : 7;//ATTENTION le nombre de lignes est lié à la police de caractère        
         this.width = params.width ? params.width : this.cont.node().offsetWidth;
         this.height = params.height ? params.height : this.cont.node().offsetHeight;
@@ -91,7 +91,7 @@ class amazelogo {
             , color = d3.scaleSequential().domain([1,100])
                 .interpolator(me.interpolateColor)//d3.interpolateWarm
             , aleaColor = d3.randomUniform(0, 100)
-            , curBalance = 0, delayBalanceStart = 0, delayBalanceChange = 500, dureeBalance = 500, repeatBalance = 3
+            , curBalance = 0, delayBalanceStart = 0, delayBalanceChange = 500, dureeBalance = 500, repeatBalance = 4
             ;
         /*
             , tl
@@ -109,10 +109,12 @@ class amazelogo {
                 .style("margin",margin+"px");            
             global = svg.append("g").attr("id",me.idCont+'svgMazeLogoGlobal');
             contPre = this.cont.append("pre").attr("id",me.idCont+'preMazeLogo');
+
             //construction du labyrinthe aléatoire suivant les dimensions
             arrMaze = maze(me.nbRow,me.nbCol);
             //dessine le labyrinte en texte
             //contPre.html(displayText(arrMaze));
+
             //calcule les paths du labyrinthe en svg 
             pp = displayMurs(arrMaze);
             //dessine les points du labyrinte en svg
@@ -120,15 +122,19 @@ class amazelogo {
                 .attr("class", "point")
                 .attr("id", (d,i)=>"point"+i)
                 .style("stroke", "black")
-                .style("fill", "red")
+                .style("fill", "white")
                 .attr("d", d=>d)
             //dessine les murs du labyrinte en svg
-            pMurs = global.append('g').attr('id','murs').selectAll('.mur').data(pp.murs).enter().append('path')
+            //ajoute les murs du texte au murs du labyrinthe
+            let arrMurs = pp.murs.concat(getMursLettre(me.textes[0]));
+            pMurs = global.append('g').attr('id','murs').selectAll('.mur').data(arrMurs).enter().append('path')
                 .attr("class", "mur")
                 .attr("id", (d,i)=>"mur"+i)
-                .style("stroke", "red")
+                .style("stroke", d=>d.l ? "red" : "white")
                 .style("stroke-width",margin/3)
-                .style("fill", "black")
+                .style("transform-origin", "0 0")
+                .style("transform-box", "fill-box")    
+                .style("opacity",0)
                 .attr("d", d=>d.d)
 
             
@@ -136,9 +142,9 @@ class amazelogo {
             balanceMur();  
         }
 
-        function ecrireTexte(){
+        function ecrireTexte(mot){
             //ajoute les rectangles pour composer les lettres
-            let lettres = global.append('g').attr('id','lettres').selectAll('.lettre').data(getCaseLettre('ARCANES')).enter().append('g');
+            let lettres = global.append('g').attr('id','lettres').selectAll('.lettre').data(getCaseLettre(mot)).enter().append('g');
             lettres.append('g').attr('id','cases').selectAll('.case').data(d=>d.cases).enter().append('rect')
                 .attr("class", "case")
                 .attr("id", (d,i)=>"case_"+d.l+"_"+i)
@@ -147,10 +153,39 @@ class amazelogo {
                 .attr("x", (d,i)=>scaleW((d.c)))//scaleW((d.c)*wMur)+margin)
                 .attr("y", (d,i)=>scaleH((d.r)))//scaleH((d.r)*hMur)+margin)
                 .style("stroke", "white")
+                .style("opacity",0)
                 .style("stroke-width",1)
-                .style("fill", "black")
+                .style("fill", "white")
                 ;
+
+            anime({
+                targets: '.case',
+                loop: false,
+                duration: dureeBalance*4,
+                easing: 'easeInOutSine',
+                //direction: 'alternate',
+                opacity:1,
+                complete: function(anim) {
+                    changeTexte();
+                    }    
+                }) 
+
         }    
+
+        function changeTexte(){
+            anime({
+                targets: ['.case','.mur','.point'],
+                loop: false,
+                duration: dureeBalance*4,
+                easing: 'easeInOutSine',
+                //direction: 'alternate',
+                opacity:0,
+                complete: function(anim) {
+                    console.log(anim);
+                }    
+                }) 
+
+        }
 
         function balanceMur(){    
             let t = '#'+me.idCont+'svgMazeLogo .mur';
@@ -158,10 +193,11 @@ class amazelogo {
             let a =  anime({
                 targets: t,
                 loop: false,
-                delay: curBalance ? delayBalanceChange : delayBalanceStart,
+                delay: function(el, i) { return i * 2},//curBalance ? delayBalanceChange : delayBalanceStart,
                 duration: dureeBalance,
                 easing: 'easeInOutSine',
                 //direction: 'alternate',
+                opacity:1,
                 transform:
                     function (d,i) {
                         //récupère les propriété du mur
@@ -170,12 +206,15 @@ class amazelogo {
                         else r = "rotate("+me.aleaAngle()+")";//on ne bouge pas les murs extérieurs
                         if(curBalance>=repeatBalance){
                             r="rotate(0)";
-                            ouvreMurEntreeSortie();
                         }
                         return r;
                     },
                 complete: function(anim) {
-                    if(curBalance<repeatBalance)balanceMur();
+                    if(curBalance<repeatBalance)balanceMur()
+                    else{
+                        //ouvreMurEntreeSortie();
+                        ecrireTexte(me.textes[0]);
+                    };
                 }    
               })
         }
@@ -197,9 +236,11 @@ class amazelogo {
                 delay: delayBalanceChange,
                 duration: dureeBalance*4,
                 easing: 'easeInOutSine',
-                transform:"rotate(900)"
+                transform:"rotate(900)",
+                complete: function(a){
+                    ecrireTexte(me.textes[0]);
+                }
             });
-            ecrireTexte();
         }
 
         function changeMurColor(){    
@@ -234,6 +275,23 @@ class amazelogo {
                 rs.push(ol);
             }
             return rs;
+        }
+
+        function getMursLettre(mot){
+            let murs = [];
+            for (let p = 0; p < mot.length; p++) {
+                let c = mot.charAt(p);
+                let l = me.lettreCases.filter(d=>d.l==c)[0];
+                //recalcule les positions
+                l.cases.forEach(d=>{
+                    //construction des quatre murs de la case
+                    murs.push(setDataMur(d.c+(6*p),d.r,'v',c));
+                    murs.push(setDataMur(d.c+(6*p),d.r,'h',c));
+                    murs.push(setDataMur(d.c+(6*p)+1,d.r,'v',c));
+                    murs.push(setDataMur(d.c+(6*p),d.r+1,'h',c));
+                })
+            }
+            return murs;
         }
 
         function maze(x,y) {
@@ -327,7 +385,7 @@ class amazelogo {
             return {'points':points,'murs':murs};
         }
 
-        function setDataMur(c,r,o){
+        function setDataMur(c,r,o,l=""){
             let line = d3.path(), x0, y0, x1, y1, ext=false;
             x0=scaleW(c);
             y0=scaleH(r);
@@ -342,7 +400,7 @@ class amazelogo {
             }
             line.moveTo(x0, y0);
             line.lineTo(x1, y1);    
-            return {'c':c,'r':r,'x0':x0,'y0':y0,'x1':x1,'y1':y1,'ext':ext,'o':o,'d':line.toString()};
+            return {'l':l,'c':c,'r':r,'x0':x0,'y0':y0,'x1':x1,'y1':y1,'ext':ext,'o':o,'d':line.toString()};
 
         }
 
