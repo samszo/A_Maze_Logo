@@ -6,8 +6,11 @@ class amazelogo {
         this.textes = params.textes ? params.textes : [
             "ARCANES"
         ];
-        this.nbCol = params.nbCol ? params.nbCol : 10;//ATTENTION le nombre de colonne est lié au nombre de caractère du texte à afficher           
-        this.nbRow = params.nbRow ? params.nbRow : 7;//ATTENTION le nombre de lignes est lié à la police de caractère        
+        //ATTENTION le nombre de colonne est lié au nombre de caractère du texte à afficher et à la police
+        this.nbCol = 41;
+        this.nbColCaract = 5;
+        //ATTENTION le nombre de lignes est lié à la police de caractère cf. me.lettreCases + marge en haut           
+        this.nbRow = 10;        
         this.width = params.width ? params.width : this.cont.node().offsetWidth;
         this.height = params.height ? params.height : this.cont.node().offsetHeight;
 
@@ -20,26 +23,12 @@ class amazelogo {
                     ,{'c':3,'r':0},{'c':3,'r':4}
                     ,{'c':4,'r':1},{'c':4,'r':2},{'c':4,'r':3},{'c':4,'r':4},{'c':4,'r':5},{'c':4,'r':6}
                 ]}
-                ,{'l':'R','cases':[
-                    {'c':0,'r':0},{'c':0,'r':1},{'c':0,'r':2},{'c':0,'r':3},{'c':0,'r':4},{'c':0,'r':5},{'c':0,'r':6}
-                    ,{'c':1,'r':0},{'c':1,'r':3}
-                    ,{'c':2,'r':0},{'c':2,'r':3},{'c':2,'r':4}
-                    ,{'c':3,'r':0},{'c':3,'r':3},{'c':3,'r':5}
-                    ,{'c':4,'r':1},{'c':4,'r':2},{'c':4,'r':6}
-                ]}
                 ,{'l':'C','cases':[
                     {'c':0,'r':1},{'c':0,'r':2},{'c':0,'r':3},{'c':0,'r':4},{'c':0,'r':5}
                     ,{'c':1,'r':0},{'c':1,'r':6}
                     ,{'c':2,'r':0},{'c':2,'r':6}
                     ,{'c':3,'r':0},{'c':3,'r':6}
                     ,{'c':4,'r':0},{'c':4,'r':6}
-                ]}
-                ,{'l':'N','cases':[
-                    {'c':0,'r':0},{'c':0,'r':1},{'c':0,'r':2},{'c':0,'r':3},{'c':0,'r':4},{'c':0,'r':5},{'c':0,'r':6}
-                    ,{'c':1,'r':2}
-                    ,{'c':2,'r':3}
-                    ,{'c':3,'r':4}
-                    ,{'c':4,'r':0},{'c':4,'r':1},{'c':4,'r':2},{'c':4,'r':3},{'c':4,'r':4},{'c':4,'r':5},{'c':4,'r':6}
                 ]}
                 ,{'l':'E','cases':[
                     {'c':0,'r':0},{'c':0,'r':1},{'c':0,'r':2},{'c':0,'r':3},{'c':0,'r':4},{'c':0,'r':5},{'c':0,'r':6}
@@ -48,6 +37,65 @@ class amazelogo {
                     ,{'c':3,'r':0},{'c':3,'r':3},{'c':3,'r':6}
                     ,{'c':4,'r':0},{'c':4,'r':6}
                 ]}
+                ,{'l':'G','cases':[
+                    {'c':0,'r':1},{'c':0,'r':2},{'c':0,'r':3},{'c':0,'r':4},{'c':0,'r':5}
+                    ,{'c':1,'r':0},{'c':1,'r':6}
+                    ,{'c':2,'r':0},{'c':2,'r':3},{'c':2,'r':6}
+                    ,{'c':3,'r':0},{'c':3,'r':3},{'c':3,'r':6}
+                    ,{'c':4,'r':0},{'c':4,'r':3},{'c':4,'r':4},{'c':4,'r':5}
+                ]}
+                ,{'l':'I','cases':[
+                    {'c':0,'r':0},{'c':0,'r':1},{'c':0,'r':2},{'c':0,'r':3},{'c':0,'r':4},{'c':0,'r':5},{'c':0,'r':6}
+                ]}
+                ,{'l':'L','cases':[
+                    {'c':0,'r':0},{'c':0,'r':1},{'c':0,'r':2},{'c':0,'r':3},{'c':0,'r':4},{'c':0,'r':5},{'c':0,'r':6}
+                    ,{'c':1,'r':6}
+                    ,{'c':2,'r':6}
+                    ,{'c':3,'r':6}
+                    ,{'c':4,'r':6}
+                ]}
+                ,{'l':'M','cases':[
+                    {'c':0,'r':0},{'c':0,'r':1},{'c':0,'r':2},{'c':0,'r':3},{'c':0,'r':4},{'c':0,'r':5},{'c':0,'r':6}
+                    ,{'c':1,'r':1}
+                    ,{'c':2,'r':2},{'c':2,'r':3}
+                    ,{'c':3,'r':1}
+                    ,{'c':4,'r':0},{'c':4,'r':1},{'c':4,'r':2},{'c':4,'r':3},{'c':4,'r':4},{'c':4,'r':5},{'c':4,'r':6}
+                ]}
+                ,{'l':'N','cases':[
+                    {'c':0,'r':0},{'c':0,'r':1},{'c':0,'r':2},{'c':0,'r':3},{'c':0,'r':4},{'c':0,'r':5},{'c':0,'r':6}
+                    ,{'c':1,'r':2}
+                    ,{'c':2,'r':3}
+                    ,{'c':3,'r':4}
+                    ,{'c':4,'r':0},{'c':4,'r':1},{'c':4,'r':2},{'c':4,'r':3},{'c':4,'r':4},{'c':4,'r':5},{'c':4,'r':6}
+                ]}
+                ,{'l':'O','cases':[
+                    {'c':0,'r':0},{'c':0,'r':1},{'c':0,'r':2},{'c':0,'r':3},{'c':0,'r':4},{'c':0,'r':5}
+                    ,{'c':1,'r':0},{'c':1,'r':6}
+                    ,{'c':2,'r':0},{'c':2,'r':6}
+                    ,{'c':3,'r':0},{'c':3,'r':6}
+                    ,{'c':4,'r':0},{'c':4,'r':1},{'c':4,'r':2},{'c':4,'r':3},{'c':4,'r':4},{'c':4,'r':5},{'c':4,'r':6}
+                ]}
+                ,{'l':'P','cases':[
+                    {'c':0,'r':0},{'c':0,'r':1},{'c':0,'r':2},{'c':0,'r':3},{'c':0,'r':4},{'c':0,'r':5},{'c':0,'r':6}
+                    ,{'c':1,'r':0},{'c':1,'r':3}
+                    ,{'c':2,'r':0},{'c':2,'r':3}
+                    ,{'c':3,'r':0},{'c':3,'r':3}
+                    ,{'c':4,'r':1},{'c':4,'r':2}
+                ]}
+                ,{'l':'Q','cases':[
+                    {'c':0,'r':1},{'c':0,'r':2},{'c':0,'r':3},{'c':0,'r':4},{'c':0,'r':5}
+                    ,{'c':1,'r':0},{'c':1,'r':5},{'c':1,'r':6}
+                    ,{'c':2,'r':0},{'c':2,'r':4},{'c':2,'r':6}
+                    ,{'c':3,'r':0},{'c':3,'r':5},{'c':3,'r':6}
+                    ,{'c':4,'r':1},{'c':4,'r':2},{'c':4,'r':3},{'c':4,'r':4},{'c':4,'r':5},{'c':4,'r':7}
+                ]}
+                ,{'l':'R','cases':[
+                    {'c':0,'r':0},{'c':0,'r':1},{'c':0,'r':2},{'c':0,'r':3},{'c':0,'r':4},{'c':0,'r':5},{'c':0,'r':6}
+                    ,{'c':1,'r':0},{'c':1,'r':3}
+                    ,{'c':2,'r':0},{'c':2,'r':3},{'c':2,'r':4}
+                    ,{'c':3,'r':0},{'c':3,'r':3},{'c':3,'r':5}
+                    ,{'c':4,'r':1},{'c':4,'r':2},{'c':4,'r':6}
+                ]}
                 ,{'l':'S','cases':[
                     {'c':0,'r':1},{'c':0,'r':2},{'c':0,'r':3},{'c':0,'r':6}
                     ,{'c':1,'r':0},{'c':1,'r':3},{'c':1,'r':6}
@@ -55,51 +103,36 @@ class amazelogo {
                     ,{'c':3,'r':0},{'c':3,'r':3},{'c':3,'r':6}
                     ,{'c':4,'r':0},{'c':4,'r':3},{'c':4,'r':4},{'c':4,'r':5}
                 ]}
+                ,{'l':'T','cases':[
+                    {'c':0,'r':0}
+                    ,{'c':1,'r':0}
+                    ,{'c':2,'r':0},{'c':2,'r':1},{'c':2,'r':2},{'c':2,'r':3},{'c':2,'r':4},{'c':2,'r':5},{'c':2,'r':6}
+                    ,{'c':3,'r':0}
+                    ,{'c':4,'r':0}
+                ]}
+                ,{'l':'U','cases':[
+                    {'c':0,'r':0},{'c':0,'r':1},{'c':0,'r':2},{'c':0,'r':3},{'c':0,'r':4},{'c':0,'r':5}
+                    ,{'c':1,'r':6}
+                    ,{'c':2,'r':6}
+                    ,{'c':3,'r':6}
+                    ,{'c':4,'r':0},{'c':4,'r':1},{'c':4,'r':2},{'c':4,'r':3},{'c':4,'r':4},{'c':4,'r':5},{'c':4,'r':6}
+                ]}
+
             ];
             this.duree = params.duree ? params.duree : 1;//en seconde
             this.interpolateColor = params.interpolateColor ? params.interpolateColor : d3.interpolateTurbo;
             this.arrAngle = [90, -90, 180, -180, 270, -270, 360, -360, 450, -450];
             this.aleaAngle = function(){return me.arrAngle[d3.randomInt(0, me.arrAngle.length)()]};
-        /*
-        this.anime = params.anime ? params.anime : false;
-        this.fontFileName = params.fontFileName ? params.fontFileName : 'asset/fonts/slkscr.ttf';        
-        this.fontFamily = params.fontFamily ? params.fontFamily : "sans-serif";
-        this.regleColor = params.regleColor ? params.regleColor : "red";
-        this.txtColor = params.txtColor ? params.txtColor : "black";
-        this.delais = params.delais ? params.delais : 250;//en milliseseconde
-        this.boutons = params.boutons ? params.boutons : false;
-        this.fctEnd = params.fctEnd ? params.fctEnd : false;
-        this.fctPause = params.fctPause ? params.fctPause : false;
-        this.fctChange = params.fctChange ? params.fctChange : false;
-        this.fctClickRegle = params.fctClickRegle ? params.fctClickRegle : pauseChangeText;
-        this.fctEndAlterneTexte = params.fctEndAlterneTexte ? params.fctEndAlterneTexte : false;
-        this.animations = params.animations ? params.animations : [];
-        this.f;
-        */
-        //ATTENTION les proproportions doivent générer des carrés
-        if(me.height<me.width)
-            me.height = me.width/me.nbCol*(me.nbRow+1);
-        else
-            me.width = me.height/me.nbRow*(me.nbCol+1);
-        var svg, global, contPre, margin=6, arrMaze=[], pp, pMurs
-            , scaleH = d3.scaleLinear().domain([0, me.nbRow+1]).range([margin*2, me.height-margin])
-            , scaleW = d3.scaleLinear().domain([0, me.nbCol+1]).range([margin*2, me.width-margin])
-            , wRect = scaleW(1)-scaleW(0)//-margin*2
-            , hRect = scaleH(1)-scaleH(0)//-margin*2
-            , aleaRow = d3.randomInt(0, me.nbRow)
-            , aleaCol = d3.randomInt(0, me.nbCol)
-            , color = d3.scaleSequential().domain([1,100])
-                .interpolator(me.interpolateColor)//d3.interpolateWarm
-            , aleaColor = d3.randomUniform(0, 100)
-            , curBalance = 0, delayBalanceStart = 0, delayBalanceChange = 500, dureeBalance = 500, repeatBalance = 4
-            ;
-        /*
-            , tl
-            , rapportFont=0.8, fontSize=20, fontSizeRedim=fontSize*rapportFont
-            , btnPause, btnPlay, btnReload, bPause = false, chars=[]
-            , regle, arrTextes=[], arrTextesSelect=[], curdim
-            ;            
-        */
+
+            var svg, global, contPre, margin=6, arrMaze=[], pp, pMurs
+                , scaleH, scaleW, wRect, hRect
+                , aleaRow, aleaCol
+                , color = d3.scaleSequential().domain([1,100])
+                    .interpolator(me.interpolateColor)//d3.interpolateWarm
+                , aleaColor = d3.randomUniform(0, 100)
+                , curBalance = 0, delayBalanceStart = 0, delayBalanceChange = 500, dureeBalance = 500, repeatBalance = 4
+                , curTexte = 0, nbCaractMax = 0, margeCaract = 1
+                ;
 
         this.init = function () {
             
@@ -110,13 +143,57 @@ class amazelogo {
             global = svg.append("g").attr("id",me.idCont+'svgMazeLogoGlobal');
             contPre = this.cont.append("pre").attr("id",me.idCont+'preMazeLogo');
 
+            me.textes.forEach((t,i)=>{
+                me.textes[i]=t.toUpperCase();
+                if(nbCaractMax < t.length)nbCaractMax=t.length;
+            });
+
+            initGrille(me.textes[curTexte]);
+            
+        }
+
+        function initGrille(texte){
+            /*ATTENTION le nombre de colonne est lié 
+            au nombre de caractère max du texte à afficher 
+            et à l'espace entre les caractères
+            */            
+            me.nbCol = (nbCaractMax*(me.nbColCaract+1))+1;
+
+            //équilibre avec le nombre de i
+            let nbI = (texte.match(/I/g) || []).length;
+            me.nbCol = me.nbCol - (nbI*(me.nbColCaract-1));
+
+            //ATTENTION les proproportions doivent générer des carrés
+            //calcul les échelles pour centrer le labyrinthe dans les dimension initiale
+            let w = me.width, h= me.height;
+            if(me.width/me.nbCol < me.height/me.nbRow){
+                scaleW = d3.scaleLinear().domain([0, me.nbCol]).range([margin*2+me.width-w, w-margin])
+                wRect = scaleW(1)-scaleW(0)//-margin*2
+                h = wRect*(me.nbRow);
+                scaleH = d3.scaleLinear().domain([0, me.nbRow]).range([0, h])
+                hRect = scaleH(1)-scaleH(0)//-margin*2
+            }else{
+                scaleH = d3.scaleLinear().domain([0, me.nbRow]).range([margin*2+me.height-h, h-margin])
+                hRect = scaleH(1)-scaleH(0)//-margin*2
+                w = hRect*me.nbCol;
+                scaleW = d3.scaleLinear().domain([0, me.nbCol]).range([0, w-margin])
+                wRect = scaleW(1)-scaleW(0)//-margin*2
+            }
+
+            aleaRow = d3.randomInt(0, me.nbRow)
+            aleaCol = d3.randomInt(0, me.nbCol)
+
             //construction du labyrinthe aléatoire suivant les dimensions
             arrMaze = maze(me.nbRow,me.nbCol);
             //dessine le labyrinte en texte
             //contPre.html(displayText(arrMaze));
-
             //calcule les paths du labyrinthe en svg 
             pp = displayMurs(arrMaze);
+            //suprime les conteneurs
+            global.select("#points").remove();
+            global.select("#murs").remove();
+            global.select("#lettres").remove();            
+
             //dessine les points du labyrinte en svg
             global.append('g').attr('id','points').selectAll('.point').data(pp.points).enter().append('path')
                 .attr("class", "point")
@@ -126,7 +203,7 @@ class amazelogo {
                 .attr("d", d=>d)
             //dessine les murs du labyrinte en svg
             //ajoute les murs du texte au murs du labyrinthe
-            let arrMurs = pp.murs.concat(getMursLettre(me.textes[0]));
+            let arrMurs = pp.murs.concat(getMursLettre(texte));
             pMurs = global.append('g').attr('id','murs').selectAll('.mur').data(arrMurs).enter().append('path')
                 .attr("class", "mur")
                 .attr("id", (d,i)=>"mur"+i)
@@ -136,10 +213,10 @@ class amazelogo {
                 .style("transform-box", "fill-box")    
                 .style("opacity",0)
                 .attr("d", d=>d.d)
-
-            
             //changeMurColor();
+            curBalance = 0;
             balanceMur();  
+
         }
 
         function ecrireTexte(mot){
@@ -181,16 +258,17 @@ class amazelogo {
                 //direction: 'alternate',
                 opacity:0,
                 complete: function(anim) {
-                    console.log(anim);
+                    curTexte = curTexte == me.textes.length-1 ? 0 : curTexte+1; 
+                    initGrille(me.textes[curTexte]);
                 }    
-                }) 
+            }) 
 
         }
 
         function balanceMur(){    
             let t = '#'+me.idCont+'svgMazeLogo .mur';
             curBalance ++;
-            let a =  anime({
+            anime({
                 targets: t,
                 loop: false,
                 delay: function(el, i) { return i * 2},//curBalance ? delayBalanceChange : delayBalanceStart,
@@ -213,7 +291,7 @@ class amazelogo {
                     if(curBalance<repeatBalance)balanceMur()
                     else{
                         //ouvreMurEntreeSortie();
-                        ecrireTexte(me.textes[0]);
+                        ecrireTexte(me.textes[curTexte]);
                     };
                 }    
               })
@@ -263,33 +341,37 @@ class amazelogo {
         }
 
         function getCaseLettre(mot){
-            let rs = [];
+            let rs = [], nbCase, posiDeb = margeCaract;
             for (let p = 0; p < mot.length; p++) {
                 let c = mot.charAt(p);
                 let l = me.lettreCases.filter(d=>d.l==c)[0];
                 //recalcule les positions
                 let ol = {'l':l,'cases':[]};
                 l.cases.forEach(d=>{
-                    ol.cases.push({'c':d.c+(6*p),'r':d.r,'l':c,'p':p})
+                    ol.cases.push({'c':d.c+posiDeb,'r':d.r+margeCaract,'l':c,'p':p})
                 })
+                nbCase= c=="I" ? 2 : 6;
+                posiDeb = posiDeb+nbCase;
                 rs.push(ol);
             }
             return rs;
         }
 
         function getMursLettre(mot){
-            let murs = [];
+            let murs = [], nbCase, posiDeb = margeCaract;
             for (let p = 0; p < mot.length; p++) {
                 let c = mot.charAt(p);
                 let l = me.lettreCases.filter(d=>d.l==c)[0];
                 //recalcule les positions
                 l.cases.forEach(d=>{
                     //construction des quatre murs de la case
-                    murs.push(setDataMur(d.c+(6*p),d.r,'v',c));
-                    murs.push(setDataMur(d.c+(6*p),d.r,'h',c));
-                    murs.push(setDataMur(d.c+(6*p)+1,d.r,'v',c));
-                    murs.push(setDataMur(d.c+(6*p),d.r+1,'h',c));
+                    murs.push(setDataMur(d.c+posiDeb,d.r+margeCaract,'v',c));
+                    murs.push(setDataMur(d.c+posiDeb,d.r+margeCaract,'h',c));
+                    murs.push(setDataMur(d.c+posiDeb+1,d.r+margeCaract,'v',c));
+                    murs.push(setDataMur(d.c+posiDeb,d.r+1+margeCaract,'h',c));
                 })
+                nbCase= c=="I" ? 2 : 6;
+                posiDeb = posiDeb+nbCase;
             }
             return murs;
         }
