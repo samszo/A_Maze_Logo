@@ -13,6 +13,11 @@ class amazelogo {
         this.nbRow = 10;        
         this.width = params.width ? params.width : this.cont.node().offsetWidth;
         this.height = params.height ? params.height : this.cont.node().offsetHeight;
+        this.colorPoint = params.colorPoint ? params.colorPoint : 'white';
+        this.colorMur = params.colorMur ? params.colorMur : 'white';
+        this.colorMurLettre = params.colorMurLettre ? params.colorMurLettre : 'red';
+        this.colorLettre = params.colorLettre ? params.colorLettre : 'white';
+        
 
             //basé sur https://www.dafont.com/fr/poxel.font
         this.lettreCases = [
@@ -132,16 +137,16 @@ class amazelogo {
                 , aleaColor = d3.randomUniform(0, 100)
                 , curBalance = 0, delayBalanceStart = 0, delayBalanceChange = 500, dureeBalance = 500, repeatBalance = 4
                 , curTexte = 0, nbCaractMax = 0, margeCaract = 1
-                ;
+                , idLogo = me.idCont+'svgMazeLogo';
 
         this.init = function () {
             
             svg = this.cont.append("svg")
-                .attr("id", me.idCont+'svgMazeLogo')
+                .attr("id", idLogo)
                 .attr("width",me.width+'px').attr("height", me.height+'px')
                 .style("margin",margin+"px");            
-            global = svg.append("g").attr("id",me.idCont+'svgMazeLogoGlobal');
-            contPre = this.cont.append("pre").attr("id",me.idCont+'preMazeLogo');
+            global = svg.append("g").attr("id",idLogo+'Global');
+            contPre = this.cont.append("pre").attr("id",idLogo+'Pre');
 
             me.textes.forEach((t,i)=>{
                 me.textes[i]=t.toUpperCase();
@@ -190,24 +195,30 @@ class amazelogo {
             //calcule les paths du labyrinthe en svg 
             pp = displayMurs(arrMaze);
             //suprime les conteneurs
-            global.select("#points").remove();
-            global.select("#murs").remove();
-            global.select("#lettres").remove();            
+            global.select("#"+idLogo+"points").remove();
+            global.select("#"+idLogo+"murs").remove();
+            global.select("#"+idLogo+"lettres").remove();            
 
             //dessine les points du labyrinte en svg
-            global.append('g').attr('id','points').selectAll('.point').data(pp.points).enter().append('path')
-                .attr("class", "point")
+            global.append('g').attr('id',idLogo+'points').selectAll('.'+idLogo+'point').data(pp.points).enter().append('path')
+                .attr("class", idLogo+"point")
                 .attr("id", (d,i)=>"point"+i)
-                .style("stroke", "black")
-                .style("fill", "white")
+                .style("fill", me.colorPoint == 'alea' ? color(aleaColor()) : me.colorPoint)
                 .attr("d", d=>d)
             //dessine les murs du labyrinte en svg
             //ajoute les murs du texte au murs du labyrinthe
             let arrMurs = pp.murs.concat(getMursLettre(texte));
-            pMurs = global.append('g').attr('id','murs').selectAll('.mur').data(arrMurs).enter().append('path')
-                .attr("class", "mur")
-                .attr("id", (d,i)=>"mur"+i)
-                .style("stroke", d=>d.l ? "red" : "white")
+            pMurs = global.append('g').attr('id',idLogo+'murs').selectAll('.'+idLogo+'mur').data(arrMurs).enter().append('path')
+                .attr("class", idLogo+"mur")
+                .attr("id", (d,i)=>idLogo+"mur"+i)
+                .style("stroke", d=>{
+                    let c;
+                    if(d.l)
+                        c = me.colorMurLettre == 'alea' ? color(aleaColor()) : me.colorMurLettre
+                    else
+                        c = me.colorMur == 'alea' ? color(aleaColor()) : me.colorMur
+                    return c;
+                })
                 .style("stroke-width",margin/3)
                 .style("transform-origin", "0 0")
                 .style("transform-box", "fill-box")    
@@ -221,22 +232,22 @@ class amazelogo {
 
         function ecrireTexte(mot){
             //ajoute les rectangles pour composer les lettres
-            let lettres = global.append('g').attr('id','lettres').selectAll('.lettre').data(getCaseLettre(mot)).enter().append('g');
-            lettres.append('g').attr('id','cases').selectAll('.case').data(d=>d.cases).enter().append('rect')
-                .attr("class", "case")
-                .attr("id", (d,i)=>"case_"+d.l+"_"+i)
+            let lettres = global.append('g').attr('id',idLogo+'lettres').selectAll('.'+idLogo+'lettre').data(getCaseLettre(mot)).enter().append('g');
+            lettres.append('g').attr('id',idLogo+'cases').selectAll('.'+idLogo+'case').data(d=>d.cases).enter().append('rect')
+                .attr("class", idLogo+"case")
+                .attr("id", (d,i)=>idLogo+"case_"+d.l+"_"+i)
                 .attr("height", hRect)
                 .attr("width", wRect)
                 .attr("x", (d,i)=>scaleW((d.c)))//scaleW((d.c)*wMur)+margin)
                 .attr("y", (d,i)=>scaleH((d.r)))//scaleH((d.r)*hMur)+margin)
-                .style("stroke", "white")
+                .style("stroke", me.colorLettre == 'alea' ? color(aleaColor()) : me.colorLettre)
                 .style("opacity",0)
                 .style("stroke-width",1)
-                .style("fill", "white")
+                .style("fill", me.colorLettre == 'alea' ? color(aleaColor()) : me.colorLettre)
                 ;
 
             anime({
-                targets: '.case',
+                targets: '.'+idLogo+'case',
                 loop: false,
                 duration: dureeBalance*4,
                 easing: 'easeInOutSine',
@@ -251,7 +262,7 @@ class amazelogo {
 
         function changeTexte(){
             anime({
-                targets: ['.case','.mur','.point'],
+                targets: ['.'+idLogo+'case','.'+idLogo+'mur','.'+idLogo+'point'],
                 loop: false,
                 duration: dureeBalance*4,
                 easing: 'easeInOutSine',
@@ -266,7 +277,7 @@ class amazelogo {
         }
 
         function balanceMur(){    
-            let t = '#'+me.idCont+'svgMazeLogo .mur';
+            let t = '.'+idLogo+'mur';
             curBalance ++;
             anime({
                 targets: t,
@@ -300,7 +311,7 @@ class amazelogo {
         function ouvreMurEntreeSortie(){
             //ouverture en haut à gauche
             anime({
-                targets: '#mur0',
+                targets: '#'+idLogo+'mur0',
                 loop: false,
                 delay: delayBalanceChange,
                 duration: dureeBalance*4,
@@ -309,7 +320,7 @@ class amazelogo {
             });
             //ouverture en bas à droite
             anime({
-                targets: '#mur'+(pp.murs.length-1),
+                targets: '#'+idLogo+'mur'+(pp.murs.length-1),
                 loop: false,
                 delay: delayBalanceChange,
                 duration: dureeBalance*4,
@@ -322,7 +333,7 @@ class amazelogo {
         }
 
         function changeMurColor(){    
-            let t = '#'+me.idCont+'svgMazeLogo .mur';
+            let t = '#'+idLogo+'.mur';
             let a = anime({
                 targets: t,
                 loop: true,

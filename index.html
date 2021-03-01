@@ -16,14 +16,22 @@
             width: 100%;
             min-height: 300px;
         }
+        #logoMazePetit{
+            height: 400px;
+            width: 400px;
+        }
 
     </style>
 </head>
 <body>
     <div id="logoMaze"></div>
+    <div id="logoMazePetit"></div>
 
     <script>
-        let ml = new amazelogo({'idCont':'logoMaze','textes':['arcanes','magique','superstition','secret']});
+        let ml = new amazelogo({'idCont':'logoMaze', 'colorPoint':'black','textes':['arcanes','magique','superstition','secret']});
+        let mlPetit = new amazelogo({'idCont':'logoMazePetit'
+            ,'colorLettre':'alea','colorMurLettre':'alea','colorMur':'alea', 'colorPoint':'black'
+            ,'textes':['arcanes','magique','superstition','secret']});
     </script>
 </body>
 </html>
