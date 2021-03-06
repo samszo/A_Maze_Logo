@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A maze(ing) Logo</title>
+    <title>A maze(ing) : Trois Couches Existentielles</title>
     <script src="asset/js/d3.V6.min.js"></script>
     <script src="asset/js/anime.min.js"></script>
     <script src="asset/js/amazelogo.js"></script>
@@ -16,22 +16,16 @@
             width: 100%;
             min-height: 300px;
         }
-        #logoMazePetit{
-            height: 400px;
-            width: 400px;
-        }
 
     </style>
 </head>
 <body>
     <div id="logoMaze"></div>
-    <div id="logoMazePetit"></div>
 
     <script>
-        let ml = new amazelogo({'idCont':'logoMaze', 'colorPoint':'black','textes':['arcanes','condiance','magique','superstition','secret']});
-        let mlPetit = new amazelogo({'idCont':'logoMazePetit'
-            ,'colorLettre':'alea','colorMurLettre':'alea','colorMur':'alea', 'colorPoint':'black'
-            ,'textes':['arcanes','magique','superstition','secret']});
+        let ml = new amazelogo({'idCont':'logoMaze', 'colorPoint':'none','textes':['Faits','Perspectives','Orientations']
+            ,'colorLettre':'alea','colorMurLettre':'alea','colorMur':'alea'
+        });
     </script>
 </body>
 </html>
