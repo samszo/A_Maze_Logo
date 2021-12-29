@@ -17,6 +17,8 @@ class amazelogo {
         this.colorMur = params.colorMur ? params.colorMur : 'white';
         this.colorMurLettre = params.colorMurLettre ? params.colorMurLettre : 'red';
         this.colorLettre = params.colorLettre ? params.colorLettre : 'white';
+        this.colorFond = params.colorFond ? params.colorFond : false;
+        this.fctEndTexte = params.fctEndTexte ? params.fctEndTexte : false;
         
 
             //basé sur https://www.dafont.com/fr/poxel.font
@@ -143,20 +145,40 @@ class amazelogo {
                     ,{'c':3,'r':5}
                     ,{'c':4,'r':0},{'c':4,'r':1},{'c':4,'r':2},{'c':4,'r':3},{'c':4,'r':4}
                 ]}
+                ,{'l':'0','cases':[
+                    {'c':0,'r':1},{'c':0,'r':2},{'c':0,'r':3},{'c':0,'r':4},{'c':0,'r':5}
+                    ,{'c':1,'r':0},{'c':1,'r':6}                    
+                    ,{'c':2,'r':0},{'c':2,'r':6}                    
+                    ,{'c':3,'r':0},{'c':3,'r':6}                    
+                    ,{'c':4,'r':1},{'c':4,'r':2},{'c':4,'r':3},{'c':4,'r':4},{'c':4,'r':5}
+                ]}
+                ,{'l':'1','cases':[
+                    {'c':1,'r':1}
+                    ,{'c':2,'r':0},{'c':2,'r':1},{'c':2,'r':2},{'c':2,'r':3},{'c':2,'r':4},{'c':2,'r':5},{'c':2,'r':6}                    
+                ]}
+                ,{'l':'2','cases':[
+                    {'c':0,'r':1},{'c':0,'r':4},{'c':0,'r':5},{'c':0,'r':6}
+                    ,{'c':1,'r':0},{'c':1,'r':4},{'c':1,'r':6}
+                    ,{'c':2,'r':0},{'c':2,'r':3},{'c':2,'r':6}
+                    ,{'c':3,'r':0},{'c':3,'r':3},{'c':3,'r':6}
+                    ,{'c':4,'r':1},{'c':4,'r':2},{'c':4,'r':6}
+                ]}
 
             ];
             this.duree = params.duree ? params.duree : 1;//en seconde
             this.interpolateColor = params.interpolateColor ? params.interpolateColor : d3.interpolateTurbo;
             this.arrAngle = [90, -90, 180, -180, 270, -270, 360, -360, 450, -450];
             this.aleaAngle = function(){return me.arrAngle[d3.randomInt(0, me.arrAngle.length)()]};
-
+            this.delayBalanceChange = params.delayBalanceChange ? params.delayBalanceChange : 500
+            this.dureeBalance = params.dureeBalance ? params.dureeBalance : 500;
+            this.repeatBalance = params.repeatBalance ? params.repeatBalance : 4;
             var svg, global, contPre, margin=6, arrMaze=[], pp, pMurs
                 , scaleH, scaleW, wRect, hRect
                 , aleaRow, aleaCol
                 , color = d3.scaleSequential().domain([1,100])
                     .interpolator(me.interpolateColor)//d3.interpolateWarm
                 , aleaColor = d3.randomUniform(0, 100)
-                , curBalance = 0, delayBalanceStart = 0, delayBalanceChange = 500, dureeBalance = 500, repeatBalance = 4
+                , curBalance = 0, delayBalanceStart = 0
                 , curTexte = 0, nbCaractMax = 0, margeCaract = 1
                 , idLogo = me.idCont+'svgMazeLogo';
 
@@ -165,7 +187,10 @@ class amazelogo {
             svg = this.cont.append("svg")
                 .attr("id", idLogo)
                 .attr("width",me.width+'px').attr("height", me.height+'px')
-                .style("margin",margin+"px");            
+                .style("margin",margin+"px");
+            if(me.colorFond)
+                svg.append('rect').attr('class','fond').attr('x',0).attr('y',0).attr('width',me.width).attr('height',me.height)
+                    .attr('fill',me.colorFond);
             global = svg.append("g").attr("id",idLogo+'Global');
             contPre = this.cont.append("pre").attr("id",idLogo+'Pre');
 
@@ -270,22 +295,24 @@ class amazelogo {
             anime({
                 targets: '.'+idLogo+'case',
                 loop: false,
-                duration: dureeBalance*4,
+                duration: me.dureeBalance*4,
                 easing: 'easeInOutSine',
                 //direction: 'alternate',
                 opacity:1,
                 complete: function(anim) {
-                    changeTexte();
-                    }    
-                }) 
-
+                    if(me.fctEndTexte && curTexte == me.textes.length-1) 
+                        me.fctEndTexte(); 
+                    else 
+                        changeTexte();
+                }                
+            }) 
         }    
 
         function changeTexte(){
             anime({
                 targets: ['.'+idLogo+'case','.'+idLogo+'mur','.'+idLogo+'point'],
                 loop: false,
-                duration: dureeBalance*4,
+                duration: me.dureeBalance*4,
                 easing: 'easeInOutSine',
                 //direction: 'alternate',
                 opacity:0,
@@ -304,7 +331,7 @@ class amazelogo {
                 targets: t,
                 loop: false,
                 delay: function(el, i) { return i * 2},//curBalance ? delayBalanceChange : delayBalanceStart,
-                duration: dureeBalance,
+                duration: me.dureeBalance,
                 easing: 'easeInOutSine',
                 //direction: 'alternate',
                 opacity:1,
@@ -314,13 +341,13 @@ class amazelogo {
                         let mur = d3.select("#"+d.id).data()[0], r="rotate(0)";
                         if(!mur.ext) r = "rotate("+me.aleaAngle()+")";
                         else r = "rotate("+me.aleaAngle()+")";//on ne bouge pas les murs extérieurs
-                        if(curBalance>=repeatBalance){
+                        if(curBalance>=me.repeatBalance){
                             r="rotate(0)";
                         }
                         return r;
                     },
                 complete: function(anim) {
-                    if(curBalance<repeatBalance)balanceMur()
+                    if(curBalance<me.repeatBalance)balanceMur()
                     else{
                         //ouvreMurEntreeSortie();
                         ecrireTexte(me.textes[curTexte]);
@@ -334,8 +361,8 @@ class amazelogo {
             anime({
                 targets: '#'+idLogo+'mur0',
                 loop: false,
-                delay: delayBalanceChange,
-                duration: dureeBalance*4,
+                delay: me.delayBalanceChange,
+                duration: me.dureeBalance*4,
                 easing: 'easeInOutSine',
                 transform:"rotate(810)"
             });
@@ -343,8 +370,8 @@ class amazelogo {
             anime({
                 targets: '#'+idLogo+'mur'+(pp.murs.length-1),
                 loop: false,
-                delay: delayBalanceChange,
-                duration: dureeBalance*4,
+                delay: me.delayBalanceChange,
+                duration: me.dureeBalance*4,
                 easing: 'easeInOutSine',
                 transform:"rotate(900)",
                 complete: function(a){

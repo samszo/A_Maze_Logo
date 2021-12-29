@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A maze(ing) Logo</title>
+    <script src="asset/js/d3.V6.min.js"></script>
+    <script src="asset/js/anime.min.js"></script>
+    <script src="asset/js/rgbcolor.js"></script>
+    <script src="asset/js/canvg.js"></script>
+    <script src="asset/js/svgenie.js"></script>
+    <script src="asset/js/amazelogo.js"></script>
+
+    <style>
+        body{
+            background-color: black;
+        }
+        #logoMaze{
+            height: 100%;
+            width: 100%;
+            min-height: 300px;
+        }
+        #logoMazePetit{
+            height: 400px;
+            width: 400px;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="logoMaze"></div>
+
+    <script>
+        let ml = new amazelogo({'idCont':'logoMaze'
+            ,'colorLettre':'alea','colorMurLettre':'alea','colorMur':'alea', 'colorPoint':'black'
+            ,'textes':['2','20','202','2022']
+            ,'dureeBalance':1, 'repeatBalance':0
+            ,'fctEndTexte':getPhoto
+            ,'colorFond':'white'
+        });
+        function getPhoto(){            
+            svgenie.save(document.getElementById('logoMazesvgMazeLogo'),{ name:"A_Maze_Logo.png" }); 
+        }
+
+    </script>
+</body>
+</html>
