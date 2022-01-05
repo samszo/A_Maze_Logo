@@ -19,11 +19,21 @@ class amazelogo {
         this.colorLettre = params.colorLettre ? params.colorLettre : 'white';
         this.colorFond = params.colorFond ? params.colorFond : false;
         this.fctEndTexte = params.fctEndTexte ? params.fctEndTexte : false;
+        this.responsive = params.responsive ? params.responsive : false;
+        this.margin = params.margin ? params.margin : 4;
         
 
             //basé sur https://www.dafont.com/fr/poxel.font
         this.lettreCases = [
-                {'l':'A','cases':[
+                {'l':' ','cases':[
+                ]}
+                ,{'l':'-','cases':[
+                    {'c':1,'r':3},{'c':2,'r':3},{'c':3,'r':3}
+                ]}
+                ,{'l':'_','cases':[
+                    {'c':1,'r':6},{'c':2,'r':6},{'c':3,'r':6}
+                ]}
+                ,{'l':'A','cases':[
                     {'c':0,'r':1},{'c':0,'r':2},{'c':0,'r':3},{'c':0,'r':4},{'c':0,'r':5},{'c':0,'r':6}
                     ,{'c':1,'r':0},{'c':1,'r':4}
                     ,{'c':2,'r':0},{'c':2,'r':4}
@@ -60,6 +70,13 @@ class amazelogo {
                 ]}
                 ,{'l':'I','cases':[
                     {'c':0,'r':0},{'c':0,'r':1},{'c':0,'r':2},{'c':0,'r':3},{'c':0,'r':4},{'c':0,'r':5},{'c':0,'r':6}
+                ]}
+                ,{'l':'J','cases':[
+                    {'c':0,'r':4},{'c':0,'r':5}
+                    ,{'c':1,'r':6}
+                    ,{'c':2,'r':6}
+                    ,{'c':3,'r':6}
+                    ,{'c':4,'r':0},{'c':4,'r':1},{'c':4,'r':2},{'c':4,'r':3},{'c':4,'r':4},{'c':4,'r':5}
                 ]}
                 ,{'l':'K','cases':[
                     {'c':0,'r':0},{'c':0,'r':1},{'c':0,'r':2},{'c':0,'r':3},{'c':0,'r':4},{'c':0,'r':5},{'c':0,'r':6}
@@ -145,6 +162,20 @@ class amazelogo {
                     ,{'c':3,'r':5}
                     ,{'c':4,'r':0},{'c':4,'r':1},{'c':4,'r':2},{'c':4,'r':3},{'c':4,'r':4}
                 ]}
+                ,{'l':'X','cases':[
+                    {'c':0,'r':0},{'c':0,'r':1},{'c':0,'r':5},{'c':0,'r':6}
+                    ,{'c':1,'r':2},{'c':1,'r':4}
+                    ,{'c':2,'r':3}
+                    ,{'c':3,'r':2},{'c':3,'r':4}
+                    ,{'c':4,'r':0},{'c':4,'r':1},{'c':4,'r':5},{'c':4,'r':6}
+                ]}
+                ,{'l':'Y','cases':[
+                    {'c':0,'r':0},{'c':0,'r':1}
+                    ,{'c':1,'r':2}
+                    ,{'c':2,'r':3},{'c':2,'r':4},{'c':2,'r':5},{'c':2,'r':6}
+                    ,{'c':3,'r':2}
+                    ,{'c':4,'r':0},{'c':4,'r':1}
+                ]}
                 ,{'l':'0','cases':[
                     {'c':0,'r':1},{'c':0,'r':2},{'c':0,'r':3},{'c':0,'r':4},{'c':0,'r':5}
                     ,{'c':1,'r':0},{'c':1,'r':6}                    
@@ -172,7 +203,7 @@ class amazelogo {
             this.delayBalanceChange = params.delayBalanceChange ? params.delayBalanceChange : 500
             this.dureeBalance = params.dureeBalance ? params.dureeBalance : 500;
             this.repeatBalance = params.repeatBalance ? params.repeatBalance : 4;
-            var svg, global, contPre, margin=6, arrMaze=[], pp, pMurs
+            var svg, global, contPre, arrMaze=[], pp, pMurs
                 , scaleH, scaleW, wRect, hRect
                 , aleaRow, aleaCol
                 , color = d3.scaleSequential().domain([1,100])
@@ -185,9 +216,15 @@ class amazelogo {
         this.init = function () {
             
             svg = this.cont.append("svg")
-                .attr("id", idLogo)
-                .attr("width",me.width+'px').attr("height", me.height+'px')
-                .style("margin",margin+"px");
+                .attr("id", idLogo);//.style("margin",me.margin+"px");
+            //ATTENTION La taille en % ne marche pas pour prendre la photo
+            if(me.responsive){
+                svg.attr("width",'100%').attr("height", '100%')
+                .attr("viewBox","0 0 "+me.width+" "+me.height)
+                .attr("preserveAspectRatio","xMinYMin meet");
+            }else{
+                svg.attr("width",me.width+'px').attr("height", me.height+'px');
+            }            
             if(me.colorFond)
                 svg.append('rect').attr('class','fond').attr('x',0).attr('y',0).attr('width',me.width).attr('height',me.height)
                     .attr('fill',me.colorFond);
@@ -218,17 +255,17 @@ class amazelogo {
             //calcul les échelles pour centrer le labyrinthe dans les dimension initiale
             let w = me.width, h= me.height;
             if(me.width/me.nbCol < me.height/me.nbRow){
-                scaleW = d3.scaleLinear().domain([0, me.nbCol]).range([margin*2+me.width-w, w-margin])
-                wRect = scaleW(1)-scaleW(0)//-margin*2
+                scaleW = d3.scaleLinear().domain([0, me.nbCol]).range([(me.margin*2+me.width-w), w-me.margin])
+                wRect = scaleW(1)-scaleW(0)//-me.margin*2
                 h = wRect*(me.nbRow);
                 scaleH = d3.scaleLinear().domain([0, me.nbRow]).range([0, h])
-                hRect = scaleH(1)-scaleH(0)//-margin*2
+                hRect = scaleH(1)-scaleH(0)//-me.margin*2
             }else{
-                scaleH = d3.scaleLinear().domain([0, me.nbRow]).range([margin*2+me.height-h, h-margin])
-                hRect = scaleH(1)-scaleH(0)//-margin*2
+                scaleH = d3.scaleLinear().domain([0, me.nbRow]).range([(me.margin*2+me.height-h), h-me.margin])
+                hRect = scaleH(1)-scaleH(0)//-me.margin*2
                 w = hRect*me.nbCol;
-                scaleW = d3.scaleLinear().domain([0, me.nbCol]).range([0, w-margin])
-                wRect = scaleW(1)-scaleW(0)//-margin*2
+                scaleW = d3.scaleLinear().domain([0, me.nbCol]).range([0, w-me.margin])
+                wRect = scaleW(1)-scaleW(0)//-me.margin*2
             }
 
             aleaRow = d3.randomInt(0, me.nbRow)
@@ -265,7 +302,7 @@ class amazelogo {
                         c = me.colorMur == 'alea' ? color(aleaColor()) : me.colorMur
                     return c;
                 })
-                .style("stroke-width",margin/3)
+                .style("stroke-width",me.margin/3)
                 .style("transform-origin", "0 0")
                 .style("transform-box", "fill-box")    
                 .style("opacity",0)
@@ -284,8 +321,8 @@ class amazelogo {
                 .attr("id", (d,i)=>idLogo+"case_"+d.l+"_"+i)
                 .attr("height", hRect)
                 .attr("width", wRect)
-                .attr("x", (d,i)=>scaleW((d.c)))//scaleW((d.c)*wMur)+margin)
-                .attr("y", (d,i)=>scaleH((d.r)))//scaleH((d.r)*hMur)+margin)
+                .attr("x", (d,i)=>scaleW((d.c)))//scaleW((d.c)*wMur)+me.margin)
+                .attr("y", (d,i)=>scaleH((d.r)))//scaleH((d.r)*hMur)+me.margin)
                 .style("stroke", me.colorLettre == 'alea' ? color(aleaColor()) : me.colorLettre)
                 .style("opacity",0)
                 .style("stroke-width",1)
@@ -398,12 +435,19 @@ class amazelogo {
                 direction: 'alternate'
             });
         }
-
+        function getCases(c){
+            let l = me.lettreCases.filter(d=>d.l==c)[0];
+            if(!l){
+                console.log(c+" : n'est pas défini");
+                l = me.lettreCases.filter(d=>d.l=='-')[0];
+            }
+            return l;
+        }
         function getCaseLettre(mot){
             let rs = [], nbCase, posiDeb = margeCaract;
             for (let p = 0; p < mot.length; p++) {
                 let c = mot.charAt(p);
-                let l = me.lettreCases.filter(d=>d.l==c)[0];
+                let l = getCases(c);
                 //recalcule les positions
                 let ol = {'l':l,'cases':[]};
                 l.cases.forEach(d=>{
@@ -420,7 +464,7 @@ class amazelogo {
             let murs = [], nbCase, posiDeb = margeCaract;
             for (let p = 0; p < mot.length; p++) {
                 let c = mot.charAt(p);
-                let l = me.lettreCases.filter(d=>d.l==c)[0];
+                let l = getCases(c);
                 //recalcule les positions
                 l.cases.forEach(d=>{
                     //construction des quatre murs de la case
@@ -507,7 +551,7 @@ class amazelogo {
                 if (0 == r%2){
                     for (var c=0; c<m.y+1; c++){
                         //ajoute le cercle pilier
-                        points.push(getCirclePath(c,r/2,margin/3));
+                        points.push(getCirclePath(c,r/2,me.margin/3));
                         //vérifie s'il faut générer le mur horizontal
                         if (r>0 && m.verti[r/2-1][c])
                             riens.push({c,r});
