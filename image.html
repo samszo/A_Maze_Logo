@@ -29,7 +29,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         
         let ml = new amazelogo({'idCont':'logoMaze'
-            ,'colorLettre':'alea','colorMurLettre':'alea','colorMur':'alea', 'colorPoint':'black'
+            ,'colorLettre':'alea','colorMurLettre':'alea','colorMur':'alea', 'colorPoint':'alea'
             ,'textes':urlParams.has('texte') ? [urlParams.get('texte')] : ['mutations']
             ,'dureeBalance':1, 'repeatBalance':0
             ,'fctEndTexte':urlParams.has('fctEndTexte') ? fct(urlParams.get('fctEndTexte')) : getPhoto
