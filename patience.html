@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A maze(ing) : Patience</title>
+    <script src="asset/js/d3.V6.min.js"></script>
+    <script src="asset/js/anime.min.js"></script>
+    <script src="asset/js/amazelogo.js"></script>
+    <style>
+        body{
+            background-color: black;
+        }
+        #logoMaze{
+            height: 100%;
+            width: 100%;
+            min-height: 300px;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="logoMaze"></div>
+
+    <script>
+        let ml = new amazelogo({'idCont':'logoMaze', 'colorPoint':'none','textes':['Patienter','Merci']
+            ,'colorLettre':'alea','colorMurLettre':'alea','colorMur':'alea'
+        });
+    </script>
+</body>
+</html>
